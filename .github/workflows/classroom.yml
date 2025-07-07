@@ -1,0 +1,68 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: 'Inputting "Learning #Python and #Regex with #ChatGPT!"'
+      id: inputting-learning-python-and-regex-with-chatgpt
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Inputting "Learning #Python and #Regex with #ChatGPT!"'
+        setup-command: ''
+        command: python3 regex_extract_hashtags/main.py
+        input: 'Learning #Python and #Regex with #ChatGPT!'
+        expected-output: |-
+          #Python
+          #Regex
+          #ChatGPT
+        comparison-method: exact
+        timeout: 10
+        max-score: 2
+    - name: 'Inputting "#Start strong! #2024Goals #_hidden_"'
+      id: inputting-start-strong-2024goals-_hidden_
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Inputting "#Start strong! #2024Goals #_hidden_"'
+        setup-command: ''
+        command: python3 regex_extract_hashtags/main.py
+        input: "#Start strong! #2024Goals #_hidden_"
+        expected-output: |-
+          #Start
+          #2024Goals
+          #_hidden_
+        comparison-method: exact
+        timeout: 10
+        max-score: 1
+    - name: 'Inputting "Mixed message: #One, then another#Two and also #Three!"'
+      id: inputting-mixed-message-one-then-another-two-and-also-three
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Inputting "Mixed message: #One, then another#Two and also #Three!"'
+        setup-command: ''
+        command: python3 regex_extract_hashtags/main.py
+        input: 'Mixed message: #One, then another#Two and also #Three!'
+        expected-output: |-
+          #One
+          #Two
+          #Three
+        comparison-method: exact
+        timeout: 10
+        max-score: 2
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        INPUTTING-LEARNING-PYTHON-AND-REGEX-WITH-CHATGPT_RESULTS: "${{steps.inputting-learning-python-and-regex-with-chatgpt.outputs.result}}"
+        INPUTTING-START-STRONG-2024GOALS-_HIDDEN__RESULTS: "${{steps.inputting-start-strong-2024goals-_hidden_.outputs.result}}"
+        INPUTTING-MIXED-MESSAGE-ONE-THEN-ANOTHER-TWO-AND-ALSO-THREE_RESULTS: "${{steps.inputting-mixed-message-one-then-another-two-and-also-three.outputs.result}}"
+      with:
+        runners: inputting-learning-python-and-regex-with-chatgpt,inputting-start-strong-2024goals-_hidden_,inputting-mixed-message-one-then-another-two-and-also-three
